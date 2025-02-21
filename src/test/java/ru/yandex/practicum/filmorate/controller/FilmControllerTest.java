@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
-import ru.yandex.practicum.filmorate.exception.NegativeDurationException;
-import ru.yandex.practicum.filmorate.exception.ValidLengthException;
 import ru.yandex.practicum.filmorate.exception.ValidReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -39,36 +37,6 @@ class FilmControllerTest {
     }
 
     @Test
-    void testAddFilmWithEmptyName() {
-        Film film = new Film();
-        film.setName("");
-        film.setDescription("A mind-bending thriller");
-        film.setReleaseDate(LocalDate.of(2010, 7, 16));
-        film.setDuration(148);
-
-        Exception exception = assertThrows(EmptyFieldException.class, () -> {
-            filmController.addFilm(film);
-        });
-
-        assertEquals("Field must be filled in", exception.getMessage());
-    }
-
-    @Test
-    void testAddFilmWithLongDescription() {
-        Film film = new Film();
-        film.setName("Inception");
-        film.setDescription("A".repeat(201));
-        film.setReleaseDate(LocalDate.of(2010, 7, 16));
-        film.setDuration(148);
-
-        Exception exception = assertThrows(ValidLengthException.class, () -> {
-            filmController.addFilm(film);
-        });
-
-        assertEquals("Field must be less than 200 symbols", exception.getMessage());
-    }
-
-    @Test
     void testAddFilmWithInvalidReleaseDate() {
         Film film = new Film();
         film.setName("Inception");
@@ -81,21 +49,6 @@ class FilmControllerTest {
         });
 
         assertEquals("Film release date is after 1895", exception.getMessage());
-    }
-
-    @Test
-    void testAddFilmWithNegativeDuration() {
-        Film film = new Film();
-        film.setName("Inception");
-        film.setDescription("A mind-bending thriller");
-        film.setReleaseDate(LocalDate.of(2010, 7, 16));
-        film.setDuration(-148);
-
-        Exception exception = assertThrows(NegativeDurationException.class, () -> {
-            filmController.addFilm(film);
-        });
-
-        assertEquals("Film duration is negative", exception.getMessage());
     }
 
     @Test

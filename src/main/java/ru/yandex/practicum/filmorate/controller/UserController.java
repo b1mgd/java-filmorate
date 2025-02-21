@@ -16,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    Map<Integer, User> users = new HashMap<>();
+    private Map<Integer, User> users = new HashMap<>();
 
     @GetMapping
     public Collection<User> getUsers() {
@@ -26,20 +26,6 @@ public class UserController {
 
     @PostMapping
     public User addUser(@RequestBody @Valid User user) {
-        if (user.getEmail() == null
-                || user.getEmail().isBlank()
-                || !user.getEmail().contains("@")) {
-            log.warn("Invalid email");
-            throw new InvalidFillingException("Invalid email");
-        }
-
-        if (user.getLogin() == null
-                || user.getLogin().isBlank()
-                || user.getLogin().contains(" ")) {
-            log.warn("Invalid login");
-            throw new InvalidFillingException("Invalid login");
-        }
-
         if (user.getBirthday() != null) {
             if (user.getBirthday().isAfter(LocalDate.now())) {
                 log.warn("Invalid birthday");
@@ -74,19 +60,11 @@ public class UserController {
             }
 
             if (user.getBirthday() != null) {
-                if (user.getBirthday().isAfter(LocalDate.now())) {
-                    log.warn("Invalid birthday");
-                    throw new InvalidFillingException("Invalid birthday");
-                }
                 log.debug("Updating user with birthday {}", user.getBirthday());
                 oldUser.setBirthday(user.getBirthday());
             }
 
             if (user.getEmail() != null && !user.getEmail().isBlank()) {
-                if (!user.getEmail().contains("@")) {
-                    log.warn("Invalid email");
-                    throw new InvalidFillingException("Invalid email");
-                }
                 log.debug("Updating user with email {}", user.getEmail());
                 oldUser.setEmail(user.getEmail());
             }

@@ -36,48 +36,6 @@ class UserControllerTest {
     }
 
     @Test
-    void testAddUserWithInvalidEmail() {
-        User user = new User();
-        user.setEmail("invalid-email");
-        user.setLogin("testLogin");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        Exception exception = assertThrows(InvalidFillingException.class, () -> {
-            userController.addUser(user);
-        });
-
-        assertEquals("Invalid email", exception.getMessage());
-    }
-
-    @Test
-    void testAddUserWithEmptyLogin() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        Exception exception = assertThrows(InvalidFillingException.class, () -> {
-            userController.addUser(user);
-        });
-
-        assertEquals("Invalid login", exception.getMessage());
-    }
-
-    @Test
-    void testAddUserWithLoginContainingSpaces() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("test Login");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-
-        Exception exception = assertThrows(InvalidFillingException.class, () -> {
-            userController.addUser(user);
-        });
-
-        assertEquals("Invalid login", exception.getMessage());
-    }
-
-    @Test
     void testAddUserWithFutureBirthday() {
         User user = new User();
         user.setEmail("test@example.com");
@@ -133,57 +91,6 @@ class UserControllerTest {
         });
 
         assertEquals("ID can't be empty", exception.getMessage());
-    }
-
-    @Test
-    void testUpdateUserWithInvalidEmail() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testLogin");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-        User addedUser = userController.addUser(user);
-
-        addedUser.setEmail("invalid-email");
-
-        Exception exception = assertThrows(InvalidFillingException.class, () -> {
-            userController.updateUser(addedUser);
-        });
-
-        assertEquals("Invalid email", exception.getMessage());
-    }
-
-    @Test
-    void testUpdateUserWithInvalidLogin() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testLogin");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-        User addedUser = userController.addUser(user);
-
-        addedUser.setLogin("test Login");
-
-        Exception exception = assertThrows(InvalidFillingException.class, () -> {
-            userController.updateUser(addedUser);
-        });
-
-        assertEquals("Invalid login", exception.getMessage());
-    }
-
-    @Test
-    void testUpdateUserWithFutureBirthday() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testLogin");
-        user.setBirthday(LocalDate.of(1990, 1, 1));
-        User addedUser = userController.addUser(user);
-
-        addedUser.setBirthday(LocalDate.now().plusDays(1));
-
-        Exception exception = assertThrows(InvalidFillingException.class, () -> {
-            userController.updateUser(addedUser);
-        });
-
-        assertEquals("Invalid birthday", exception.getMessage());
     }
 
     @Test

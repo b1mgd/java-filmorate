@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
-import ru.yandex.practicum.filmorate.exception.NegativeDurationException;
-import ru.yandex.practicum.filmorate.exception.ValidLengthException;
 import ru.yandex.practicum.filmorate.exception.ValidReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    Map<Integer, Film> films = new HashMap<>();
+    private Map<Integer, Film> films = new HashMap<>();
 
     @GetMapping
     public Collection<Film> getFilms() {
@@ -26,31 +25,14 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
+    public Film addFilm(@RequestBody @Valid Film film) {
         log.info("addFilm");
-
-        if (film.getName() == null || film.getName().isBlank()) {
-            log.warn("Film name is empty");
-            throw new EmptyFieldException("Field must be filled in");
-        }
-
-        if (film.getDescription() != null) {
-            if (film.getDescription().length() >= 200) {
-                log.warn("Film description is too long");
-                throw new ValidLengthException("Field must be less than 200 symbols");
-            }
-        }
 
         if (film.getReleaseDate() != null) {
             if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
                 log.warn("Film release date is after 1895");
                 throw new ValidReleaseException("Film release date is after 1895");
             }
-        }
-
-        if (film.getDuration() < 0) {
-            log.warn("Film duration is negative");
-            throw new NegativeDurationException("Film duration is negative");
         }
 
         film.setId(setFilmId());
@@ -73,26 +55,14 @@ public class FilmController {
                 oldFilm.setName(film.getName());
             }
             if (film.getDescription() != null && !film.getDescription().isBlank()) {
-                if (film.getDescription().length() >= 200) {
-                    log.warn("Film description is too long");
-                    throw new ValidLengthException("Field must be less than 200 symbols");
-                }
                 log.debug("Updating film with description {}", film.getDescription());
                 oldFilm.setDescription(film.getDescription());
             }
             if (film.getReleaseDate() != null) {
-                if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-                    log.warn("Film release date is after 1895");
-                    throw new ValidReleaseException("Film release date is after 1895");
-                }
                 log.debug("Updating film with releaseDate {}", film.getReleaseDate());
                 oldFilm.setReleaseDate(film.getReleaseDate());
             }
             if (film.getDuration() != 0) {
-                if (film.getDuration() < 0) {
-                    log.warn("Film duration is negative");
-                    throw new NegativeDurationException("Film duration is negative");
-                }
                 log.debug("Updating film with duration {}", film.getDuration());
                 oldFilm.setDuration(film.getDuration());
             }
@@ -112,4 +82,3 @@ public class FilmController {
         return ++currentMaxId;
     }
 }
-
