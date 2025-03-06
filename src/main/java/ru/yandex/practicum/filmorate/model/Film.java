@@ -21,7 +21,7 @@ public class Film {
     private int duration;
     private Set<Integer> whoLiked;
 
-    public Film(){
+    public Film() {
         this.whoLiked = new HashSet<>();
     }
 }
