@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -17,4 +19,9 @@ public class Film {
     private LocalDate releaseDate;
     @Min(value = 0, message = "Film duration is negative")
     private int duration;
+    private Set<Integer> whoLiked;
+
+    public Film(){
+        this.whoLiked = new HashSet<>();
+    }
 }

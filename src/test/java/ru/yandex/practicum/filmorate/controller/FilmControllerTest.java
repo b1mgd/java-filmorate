@@ -5,18 +5,22 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
 import ru.yandex.practicum.filmorate.exception.ValidReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
+    private final InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+    private final InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
 
     private FilmController filmController;
 
     @BeforeEach
     void setUp() {
-        filmController = new FilmController();
+        filmController = new FilmController(inMemoryFilmStorage, inMemoryUserStorage);
     }
 
     @Test

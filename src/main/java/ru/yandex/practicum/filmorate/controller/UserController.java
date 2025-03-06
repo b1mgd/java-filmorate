@@ -2,96 +2,75 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
-import ru.yandex.practicum.filmorate.exception.InvalidFillingException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private Map<Integer, User> users = new HashMap<>();
+    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(InMemoryUserStorage inMemoryUserStorage) {
+        this.inMemoryUserStorage = inMemoryUserStorage;
+        userService = new UserService(inMemoryUserStorage);
+    }
 
     @GetMapping
     public Collection<User> getUsers() {
         log.info("getUsers");
-        return users.values();
+        return inMemoryUserStorage.getUsers();
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public User addUser(@RequestBody @Valid User user) {
-        if (user.getBirthday() != null) {
-            if (user.getBirthday().isAfter(LocalDate.now())) {
-                log.warn("Invalid birthday");
-                throw new InvalidFillingException("Invalid birthday");
-            }
-        }
-
-        if (user.getName() == null) {
-            log.debug("Username is empty, using login as name");
-            user.setName(user.getLogin());
-        }
-
-        user.setId(setUserId());
-        log.debug("User id: {}", user.getId());
-        users.put(user.getId(), user);
-        log.info("Added user: {}", user);
-        return user;
+        log.info("addUser");
+        return inMemoryUserStorage.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody @Valid User user) {
-        if (user.getId() == 0) {
-            log.warn("User id is empty");
-            throw new EmptyFieldException("ID can't be empty");
-        }
-
-        if (users.containsKey(user.getId())) {
-            User oldUser = users.get(user.getId());
-            if (user.getName() != null && !user.getName().isBlank()) {
-                log.debug("Updating user with name {}", user.getName());
-                oldUser.setName(user.getName());
-            }
-
-            if (user.getBirthday() != null) {
-                log.debug("Updating user with birthday {}", user.getBirthday());
-                oldUser.setBirthday(user.getBirthday());
-            }
-
-            if (user.getEmail() != null && !user.getEmail().isBlank()) {
-                log.debug("Updating user with email {}", user.getEmail());
-                oldUser.setEmail(user.getEmail());
-            }
-
-            if (user.getLogin() != null && !user.getLogin().isBlank()) {
-                if (user.getLogin().contains(" ")) {
-                    log.warn("Invalid login");
-                    throw new InvalidFillingException("Invalid login");
-                }
-                log.debug("Updating user with login {}", user.getLogin());
-                oldUser.setLogin(user.getLogin());
-            }
-            log.info("User updated");
-            return oldUser;
-        }
-
-        log.warn("User not found");
-        throw new RuntimeException("User not found");
+        log.info("updateUser");
+        return inMemoryUserStorage.updateUser(user);
     }
 
-    private int setUserId() {
-        int currentMaxId = users.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable int id) {
+        log.info("getUserById");
+        return inMemoryUserStorage.getUserById(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        log.info("addFriend");
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        log.info("deleteFriend");
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> getGeneralFriends(@PathVariable int id, @PathVariable int otherId) {
+        log.info("getGeneralFriends");
+        return userService.getGeneralFriends(id, otherId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Collection<User> getFriends(@PathVariable int id) {
+        log.info("getFriends");
+        return userService.getFriends(id);
     }
 }
 
