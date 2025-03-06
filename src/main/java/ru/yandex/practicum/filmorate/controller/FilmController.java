@@ -70,11 +70,8 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getTopFilms(@RequestParam(defaultValue = "10", required = false) int count) {
-        {
-            log.info("getTopFilms");
-
-            return filmService.getTopFilms(count);
-        }
-
+        log.info("getTopFilms");
+        return filmService.getTopFilms(count);
     }
+
 }
