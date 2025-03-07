@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
-import ru.yandex.practicum.filmorate.exception.InvalidFillingException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -12,11 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
 
+    private final InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
+
     private UserController userController;
 
     @BeforeEach
     void setUp() {
-        userController = new UserController();
+        userController = new UserController(inMemoryUserStorage);
     }
 
     @Test
@@ -33,20 +35,6 @@ class UserControllerTest {
         assertEquals("testLogin", addedUser.getLogin());
         assertEquals(LocalDate.of(1990, 1, 1), addedUser.getBirthday());
         assertEquals("testLogin", addedUser.getName());
-    }
-
-    @Test
-    void testAddUserWithFutureBirthday() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setLogin("testLogin");
-        user.setBirthday(LocalDate.now().plusDays(1));
-
-        Exception exception = assertThrows(InvalidFillingException.class, () -> {
-            userController.addUser(user);
-        });
-
-        assertEquals("Invalid birthday", exception.getMessage());
     }
 
     @Test

@@ -2,21 +2,25 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.ConstraintViolationException;
 import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
-import ru.yandex.practicum.filmorate.exception.ValidReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
+    private final InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+    private final InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
 
     private FilmController filmController;
 
     @BeforeEach
     void setUp() {
-        filmController = new FilmController();
+        filmController = new FilmController(inMemoryFilmStorage, inMemoryUserStorage);
     }
 
     @Test
@@ -44,7 +48,7 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1894, 12, 28));
         film.setDuration(148);
 
-        Exception exception = assertThrows(ValidReleaseException.class, () -> {
+        Exception exception = assertThrows(ConstraintViolationException.class, () -> {
             filmController.addFilm(film);
         });
 
