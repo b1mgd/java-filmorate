@@ -2,8 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
-import ru.yandex.practicum.filmorate.exception.InvalidFillingException;
+import ru.yandex.practicum.filmorate.exception.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -23,11 +22,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        if (user.getName() == null) {
-            log.debug("Username is empty, using login as name");
-            user.setName(user.getLogin());
-        }
-
         user.setId(setUserId());
         log.debug("User id: {}", user.getId());
         users.put(user.getId(), user);
@@ -37,11 +31,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (user.getId() == 0) {
-            log.warn("User id is empty");
-            throw new EmptyFieldException("ID can't be empty");
-        }
-
         if (users.containsKey(user.getId())) {
             User oldUser = users.get(user.getId());
             if (user.getName() != null && !user.getName().isBlank()) {
@@ -62,7 +51,7 @@ public class InMemoryUserStorage implements UserStorage {
             if (user.getLogin() != null && !user.getLogin().isBlank()) {
                 if (user.getLogin().contains(" ")) {
                     log.warn("Invalid login");
-                    throw new InvalidFillingException("Invalid login");
+                    throw new MethodArgumentNotValidException("Invalid login");
                 }
                 log.debug("Updating user with login {}", user.getLogin());
                 oldUser.setLogin(user.getLogin());

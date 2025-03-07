@@ -15,38 +15,36 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final InMemoryUserStorage inMemoryUserStorage;
     private final UserService userService;
 
     @Autowired
     public UserController(InMemoryUserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
         userService = new UserService(inMemoryUserStorage);
     }
 
     @GetMapping
     public Collection<User> getUsers() {
         log.info("getUsers");
-        return inMemoryUserStorage.getUsers();
+        return userService.getUsers();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public User addUser(@RequestBody @Valid User user) {
         log.info("addUser");
-        return inMemoryUserStorage.addUser(user);
+        return userService.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody @Valid User user) {
         log.info("updateUser");
-        return inMemoryUserStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
         log.info("getUserById");
-        return inMemoryUserStorage.getUserById(id);
+        return userService.getUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

@@ -1,13 +1,18 @@
 package ru.yandex.practicum.filmorate.service.user;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -87,9 +92,35 @@ public class UserService {
                 commonFriends.add(friend);
             }
         }
-
         return commonFriends;
     }
+
+
+    public Collection<User> getUsers() {
+        return inMemoryUserStorage.getUsers();
+    }
+
+    public User addUser(User user) {
+        if (user.getName() == null) {
+            log.debug("Username is empty, using login as name");
+            user.setName(user.getLogin());
+        }
+        return inMemoryUserStorage.addUser(user);
+    }
+
+    public User updateUser(@RequestBody @Valid User user) {
+        if (user.getId() == 0) {
+            log.warn("User id is empty");
+            throw new EmptyFieldException("ID can't be empty");
+        }
+        return inMemoryUserStorage.updateUser(user);
+    }
+
+    public User getUserById(@PathVariable int id) {
+        log.info("getUserById");
+        return inMemoryUserStorage.getUserById(id);
+    }
+
 
     private void userIsExists(int userId) {
         if (inMemoryUserStorage.getUserById(userId) == null) {

@@ -2,17 +2,18 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidReleaseException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Repository
 public class InMemoryFilmStorage implements FilmStorage {
+    Map<Integer, Film> films = new HashMap<>();
+
     @Override
     public Collection<Film> getFilms() {
         return films.values();
@@ -20,13 +21,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        if (film.getReleaseDate() != null) {
-            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-                log.warn("Film release date is after 1895");
-                throw new ValidReleaseException("Film release date is after 1895");
-            }
-        }
-
         film.setId(setFilmId());
         log.debug("Film id set to {}", film.getId());
         films.put(film.getId(), film);
@@ -36,10 +30,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if (film.getId() == 0) {
-            log.warn("Film id is empty");
-            throw new EmptyFieldException("ID can't be empty");
-        }
         if (films.containsKey(film.getId())) {
             Film oldFilm = films.get(film.getId());
             if (film.getName() != null && !film.getName().isBlank()) {
