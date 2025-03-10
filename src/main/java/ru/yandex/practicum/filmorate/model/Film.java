@@ -1,12 +1,24 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
-/**
- * Film.
- */
-@Getter
-@Setter
+import java.time.LocalDate;
+
+@Data
 public class Film {
+    private Integer id;
+
+    @NotBlank(message = "Некорректное название фильма")
+    private String name;
+
+    @NotNull (message = "Описание фильма должно быть заполнено")
+    @NotBlank (message = "Некорректное описание фильма")
+    private String description;
+
+    @NotNull(message = "Дата выхода фильма должна быть указана")
+    private LocalDate releaseDate;
+
+    @Positive(message = "Продолжительность фильма должна быть положительной")
+    private long duration;
 }
