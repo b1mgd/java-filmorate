@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Validated
 @Slf4j
 @RestController
 @RequestMapping("/users")
@@ -31,9 +29,9 @@ public class UserController {
         Integer id = getNextInt();
         newUser.setId(id);
 
-        if (newUser.getName() == null || newUser.getName().isBlank()) {
+        if (isBlankName(newUser)) {
             newUser.setName(newUser.getLogin());
-            log.info("Логин пользователя c ID {} {} указан в качестве имени", newUser.getId(),newUser.getLogin());
+            log.info("Логин пользователя c ID {} {} указан в качестве имени", newUser.getId(), newUser.getLogin());
         }
 
         users.put(id, newUser);
@@ -53,9 +51,9 @@ public class UserController {
 
         User user = users.get(newUser.getId());
 
-        if (newUser.getName() == null || newUser.getName().isBlank()) {
+        if (isBlankName(newUser)) {
             user.setName(newUser.getLogin());
-            log.info("Логин пользователя c ID {} {} указан в качестве имени", newUser.getId(),newUser.getLogin());
+            log.info("Логин пользователя c ID {} {} указан в качестве имени", newUser.getId(), newUser.getLogin());
         } else {
             user.setName(newUser.getName());
         }
@@ -75,5 +73,9 @@ public class UserController {
                 .max()
                 .orElse(0);
         return ++currentId;
+    }
+
+    private boolean isBlankName(User newUser) {
+        return newUser.getName() == null || newUser.getName().isBlank();
     }
 }
