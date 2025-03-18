@@ -6,8 +6,8 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class User {
@@ -20,9 +20,9 @@ public class User {
     private String name;
     @PastOrPresent(message = "Invalid birthday")
     private LocalDate birthday;
-    private Set<Integer> friends;
+    private Map<Integer, Boolean> friends;
 
     public User() {
-        this.friends = new HashSet<>(); // Инициализация в конструкторе
+        this.friends = new HashMap<>(); // Инициализация в конструкторе
     }
 }

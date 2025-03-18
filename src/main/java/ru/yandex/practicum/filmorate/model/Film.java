@@ -20,6 +20,8 @@ public class Film {
     @Min(value = 0, message = "Film duration is negative")
     private int duration;
     private Set<Integer> whoLiked;
+    private String genre;
+    private Rating rating;
 
     public Film() {
         this.whoLiked = new HashSet<>();
