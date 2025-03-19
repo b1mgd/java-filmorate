@@ -32,13 +32,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Set<Integer> getFilmIds() {
         log.info("Был выдан список ключей {} из хранилища", films.keySet());
-        return films.keySet();
+        return Set.copyOf(films.keySet());
     }
 
     @Override
     public Collection<Film> getFilms() {
         log.info("Был выдан список значений {} из хранилища", films.values());
-        return films.values();
+        return List.copyOf(films.values());
     }
 
     @Override
