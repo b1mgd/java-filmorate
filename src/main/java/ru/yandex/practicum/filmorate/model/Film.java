@@ -20,7 +20,7 @@ public class Film {
     @Min(value = 0, message = "Film duration is negative")
     private int duration;
     private Set<Integer> whoLiked;
-    private String genre;
+    private Set<Genre> genre;
     private Rating rating;
 
     public Film() {
