@@ -29,13 +29,13 @@ public class UserService {
     public void addFriend(int firstUserId, int secondUserId) {
         userIsExists(firstUserId);
         userIsExists(secondUserId);
-        if (!inMemoryUserStorage.getUserById(firstUserId).getFriends().contains(secondUserId) &&
-                !inMemoryUserStorage.getUserById(secondUserId).getFriends().contains(firstUserId)) {
+        if (!inMemoryUserStorage.getUserById(firstUserId).getFriends().containsKey(secondUserId) &&
+                !inMemoryUserStorage.getUserById(secondUserId).getFriends().containsKey(firstUserId)) {
             log.debug("add friends");
-            inMemoryUserStorage.getUserById(firstUserId).getFriends().add(secondUserId);
-            inMemoryUserStorage.getUserById(secondUserId).getFriends().add(firstUserId);
-        } else if (inMemoryUserStorage.getUserById(firstUserId).getFriends().contains(secondUserId) &&
-                inMemoryUserStorage.getUserById(secondUserId).getFriends().contains(firstUserId)) {
+            inMemoryUserStorage.getUserById(firstUserId).getFriends().put(secondUserId, false);
+            inMemoryUserStorage.getUserById(secondUserId).getFriends().put(firstUserId, false);
+        } else if (inMemoryUserStorage.getUserById(firstUserId).getFriends().containsKey(secondUserId) &&
+                inMemoryUserStorage.getUserById(secondUserId).getFriends().containsKey(firstUserId)) {
             log.warn("the friendship was already created");
             throw new RuntimeException("the friendship was already created");
         } else {
@@ -48,13 +48,13 @@ public class UserService {
     public void deleteFriend(int firstUserId, int secondUserId) {
         userIsExists(firstUserId);
         userIsExists(secondUserId);
-        if (inMemoryUserStorage.getUserById(firstUserId).getFriends().contains(secondUserId) &&
-                inMemoryUserStorage.getUserById(secondUserId).getFriends().contains(firstUserId)) {
+        if (inMemoryUserStorage.getUserById(firstUserId).getFriends().containsKey(secondUserId) &&
+                inMemoryUserStorage.getUserById(secondUserId).getFriends().containsKey(firstUserId)) {
             log.debug("delete friends");
             inMemoryUserStorage.getUserById(firstUserId).getFriends().remove(secondUserId);
             inMemoryUserStorage.getUserById(secondUserId).getFriends().remove(firstUserId);
-        } else if (!inMemoryUserStorage.getUserById(firstUserId).getFriends().contains(secondUserId) &&
-                !inMemoryUserStorage.getUserById(secondUserId).getFriends().contains(firstUserId)) {
+        } else if (!inMemoryUserStorage.getUserById(firstUserId).getFriends().containsKey(secondUserId) &&
+                !inMemoryUserStorage.getUserById(secondUserId).getFriends().containsKey(firstUserId)) {
             inMemoryUserStorage.getUserById(firstUserId).getFriends().remove(secondUserId);
             inMemoryUserStorage.getUserById(secondUserId).getFriends().remove(firstUserId);
         } else {
@@ -67,7 +67,7 @@ public class UserService {
     public List<User> getFriends(int userId) {
         userIsExists(userId);
         List<User> friends = new ArrayList<>();
-        for (Integer friendId : inMemoryUserStorage.getUserById(userId).getFriends()) {
+        for (Integer friendId : inMemoryUserStorage.getUserById(userId).getFriends().keySet()) {
             User friend = inMemoryUserStorage.getUserById(friendId);
             if (friend != null) {
                 friends.add(friend);
@@ -79,9 +79,9 @@ public class UserService {
     public List<User> getGeneralFriends(int firstUserId, int secondUserId) {
         userIsExists(firstUserId);
         userIsExists(secondUserId);
-        Set<Integer> firstUserFriends = inMemoryUserStorage.getUserById(firstUserId).getFriends();
+        Set<Integer> firstUserFriends = inMemoryUserStorage.getUserById(firstUserId).getFriends().keySet();
 
-        Set<Integer> secondUserFriends = inMemoryUserStorage.getUserById(secondUserId).getFriends();
+        Set<Integer> secondUserFriends = inMemoryUserStorage.getUserById(secondUserId).getFriends().keySet();
 
         firstUserFriends.retainAll(secondUserFriends);
 
