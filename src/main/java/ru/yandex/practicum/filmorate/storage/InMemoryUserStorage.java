@@ -16,7 +16,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Collection<User> getAllUsers() {
         log.info("Направлен список пользователей: {}", users.values());
-        return users.values();
+        return List.copyOf(users.values());
     }
 
     @Override
@@ -28,7 +28,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Set<Integer> getUserIds() {
         log.info("Направлено множество id пользователей: {}", users.keySet());
-        return users.keySet();
+        return Set.copyOf(users.keySet());
     }
 
     @Override

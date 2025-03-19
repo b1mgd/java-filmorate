@@ -62,8 +62,6 @@ public class UserService {
     }
 
     public User updateUser(User newUser) {
-        System.out.println("Текущие userStorage.getUserIds(): " + userStorage.getUserIds());
-        System.out.println("Проверяем ID: " + newUser.getId());
 
         if (newUser.getId() == null || !userStorage.getUserIds().contains(newUser.getId())) {
             log.warn("Пользователь с указанным id {} не найден", newUser.getId());
@@ -100,8 +98,8 @@ public class UserService {
         User friend = getUserById(friendId);
 
         if (!user.getFriends().contains(friendId))
-//            throw new ValidateException("Пользователи с id " + id + " и " + friendId + " не являются друзьями");
             return;
+
         user.getFriends().remove(friendId);
         friend.getFriends().remove(id);
 
