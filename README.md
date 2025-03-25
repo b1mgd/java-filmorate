@@ -2,4 +2,4 @@
 Template repository for Filmorate project.
 
 ![Схема базы данных веб-приложения Filmorate]
-(https://github.com/b1mgd/java-filmorate/blob/add-friends-likes/dbdiagram-filmorate.png)
+(https://raw.githubusercontent.com/b1mgd/java-filmorate/add-friends-likes/dbdiagram-filmorate.png)
