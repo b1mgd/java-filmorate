@@ -87,8 +87,8 @@ public class UserService {
             throw new ValidateException("Пользователи с id " + id + " и " + friendId + " уже являются друзьями");
         }
 
-        user.getFriends().add(friendId);
-        friend.getFriends().add(id);
+        user.addFriend(friendId);
+        friend.addFriend(id);
 
         log.info("Пользователи с id {} и {} стали друзьями", id, friendId);
     }
@@ -100,8 +100,8 @@ public class UserService {
         if (!user.getFriends().contains(friendId))
             return;
 
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(id);
+        user.deleteFriend(friendId);
+        friend.deleteFriend(id);
 
         log.info("Запрос на удаление из друзей пользователей {} и {} выполнен", id, friendId);
     }

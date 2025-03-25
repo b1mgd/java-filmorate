@@ -6,8 +6,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -27,5 +29,18 @@ public class User {
     @Past (message = "Некорректная дата рождения")
     private LocalDate birthday;
 
-    private final Set<Integer> friends = new HashSet<>();
+    private final Map<Integer, FriendshipStatus> friends = new HashMap<>();
+
+    public Collection<Integer> getFriends() {
+        return List.copyOf(friends.keySet());
+    }
+
+    // временная реализация методов до спринта 12
+    public void addFriend(Integer id) {
+        friends.put(id, FriendshipStatus.ACCEPTED);
+    }
+
+    public void deleteFriend(Integer id) {
+        friends.remove(id);
+    }
 }
