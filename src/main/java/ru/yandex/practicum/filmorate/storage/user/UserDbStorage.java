@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 @Qualifier
@@ -36,8 +35,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User getUserById(long userId) {
-        return repository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
+        return repository.findById(userId).orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
     }
 
     public Set<Long> getFriends(long userId) {

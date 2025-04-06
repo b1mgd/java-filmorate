@@ -79,7 +79,7 @@ public class UserRepository extends BaseRepository<User> {
         jdbc.update(updateSql, userId, friendId);
     }
 
-    public void deleteFriend(long userId, long friendId){
+    public void deleteFriend(long userId, long friendId) {
         String deleteSql = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
         update(deleteSql, userId, friendId);
     }

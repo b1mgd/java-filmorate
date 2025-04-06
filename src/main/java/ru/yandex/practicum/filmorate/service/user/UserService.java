@@ -30,7 +30,7 @@ public class UserService {
     }
 
     public void addFriend(long firstUserId, long secondUserId) {
-        if(!isExistsUser(userDbStorage.getUserById(firstUserId)) || !isExistsUser(userDbStorage.getUserById(secondUserId))){
+        if (isExistsUser(userDbStorage.getUserById(firstUserId)) || isExistsUser(userDbStorage.getUserById(secondUserId))) {
             log.warn("User not found");
             throw new NotFoundException("User with this id not found");
         }
@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public void deleteFriend(long firstUserId, long secondUserId) {
-        if(!isExistsUser(userDbStorage.getUserById(firstUserId)) || !isExistsUser(userDbStorage.getUserById(secondUserId))){
+        if (isExistsUser(userDbStorage.getUserById(firstUserId)) || isExistsUser(userDbStorage.getUserById(secondUserId))) {
             log.warn("User not found");
             throw new NotFoundException("User with this id not found");
         }
@@ -58,7 +58,7 @@ public class UserService {
     }
 
     public List<UserDto> getFriends(long userId) {
-        if(!isExistsUser(userDbStorage.getUserById(userId))){
+        if (isExistsUser(userDbStorage.getUserById(userId))) {
             log.warn("User not found");
             throw new NotFoundException("User with this id not found");
         }
@@ -75,7 +75,7 @@ public class UserService {
     }
 
     public List<UserDto> getGeneralFriends(int firstUserId, int secondUserId) {
-        if(!isExistsUser(userDbStorage.getUserById(firstUserId)) || !isExistsUser(userDbStorage.getUserById(secondUserId))){
+        if (isExistsUser(userDbStorage.getUserById(firstUserId)) || isExistsUser(userDbStorage.getUserById(secondUserId))) {
             log.warn("User not found");
             throw new NotFoundException("User with this id not found");
         }
@@ -116,7 +116,7 @@ public class UserService {
         if (user.getId() == 0) {
             log.warn("User id is empty");
             throw new EmptyFieldException("ID can't be empty");
-        }else if (!isExistsUser(user)) {
+        } else if (isExistsUser(user)) {
             log.warn("User not found");
             throw new NotFoundException("User with this id not found");
         }
@@ -128,8 +128,8 @@ public class UserService {
         return UserMapper.mapToUserDto(userDbStorage.getUserById(id));
     }
 
-    private boolean isExistsUser(User user){
+    private boolean isExistsUser(User user) {
         return userDbStorage.getUsers().stream()
-                .anyMatch(userCheck -> userCheck.getId() == user.getId());
+                .noneMatch(userCheck -> userCheck.getId() == user.getId());
     }
 }

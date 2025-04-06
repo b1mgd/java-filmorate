@@ -12,22 +12,22 @@ public class UpdateFilmRequest {
     private Rating ratingId;
 
     public boolean hasName() {
-        return ! (name == null || name.isBlank());
+        return !(name == null || name.isBlank());
     }
 
     public boolean hasDescription() {
-        return ! (description == null || description.isBlank());
+        return !(description == null || description.isBlank());
     }
 
     public boolean hasReleaseDate() {
-        return ! (releaseDate == null);
+        return !(releaseDate == null);
     }
 
     public boolean hasDuration() {
-        return ! (duration == null);
+        return !(duration == null);
     }
 
     public boolean hasRaringId() {
-        return ! (ratingId == null);
+        return !(ratingId == null);
     }
 }
