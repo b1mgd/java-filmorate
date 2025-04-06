@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 
 @Data
-public class Genre {
-    private long id;
-    private String name;
+public class Like {
+    private long userId;
+    private long filmId;
 }

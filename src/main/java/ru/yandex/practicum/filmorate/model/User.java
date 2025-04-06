@@ -6,12 +6,10 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 public class User {
-    private int id;
+    private long id;
     @NotBlank(message = "Invalid email")
     @Email(message = "Invalid email")
     private String email;
@@ -20,9 +18,5 @@ public class User {
     private String name;
     @PastOrPresent(message = "Invalid birthday")
     private LocalDate birthday;
-    private Map<Integer, Boolean> friends;
 
-    public User() {
-        this.friends = new HashMap<>(); // Инициализация в конструкторе
-    }
 }

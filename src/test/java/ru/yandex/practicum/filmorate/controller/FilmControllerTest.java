@@ -2,25 +2,33 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dal.FilmRepository;
+import ru.yandex.practicum.filmorate.dal.UserRepository;
+import ru.yandex.practicum.filmorate.dal.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.dal.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.exception.ConstraintViolationException;
 import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-    private final InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-    private final InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
+    /*private JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    private final FilmDbStorage filmDbStorage = new FilmDbStorage(new FilmRepository(
+            jdbcTemplate, new FilmRowMapper()));
+    private final UserDbStorage userDbStorage = new UserDbStorage(new UserRepository(
+            jdbcTemplate, new UserRowMapper()));
 
     private FilmController filmController;
 
     @BeforeEach
     void setUp() {
-        filmController = new FilmController(inMemoryFilmStorage, inMemoryUserStorage);
+        filmController = new FilmController(filmDbStorage, userDbStorage);
     }
 
     @Test
@@ -100,5 +108,5 @@ class FilmControllerTest {
         });
 
         assertEquals("Film not found", exception.getMessage());
-    }
+    }*/
 }

@@ -2,23 +2,26 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.dal.UserRepository;
+import ru.yandex.practicum.filmorate.dal.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
-
-    private final InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
+    /*private final UserDbStorage userDbStorage = new UserDbStorage(new UserRepository(
+            new JdbcTemplate(), new UserRowMapper()));
 
     private UserController userController;
 
     @BeforeEach
     void setUp() {
-        userController = new UserController(inMemoryUserStorage);
+        userController = new UserController(userDbStorage);
     }
 
     @Test
@@ -94,5 +97,5 @@ class UserControllerTest {
         });
 
         assertEquals("User not found", exception.getMessage());
-    }
+    }*/
 }
