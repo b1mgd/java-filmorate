@@ -41,7 +41,6 @@ public class FilmRepository extends BaseRepository<Film> {
     public List<Film> findAll() {
         List<Film> films = findMany(FIND_ALL_QUERY);
         films.forEach(this::loadGenres);
-        films.forEach(this::loadRating);
         return films;
     }
 
@@ -125,12 +124,8 @@ public class FilmRepository extends BaseRepository<Film> {
     private void loadRating(Film film) {
         if (film.getMpa() != null && film.getMpa().getId() != 0) {
             String sql = "SELECT rating_id, rating_name FROM rating WHERE rating_id = ?";
-            try {
                 Rating fullRating = jdbc.queryForObject(sql, new RatingRowMapper(), film.getMpa().getId());
                 film.setMpa(fullRating);
-            } catch (Exception e) {
-                System.err.println("Rating not found for id: " + film.getMpa().getId());
-            }
         }
     }
 
