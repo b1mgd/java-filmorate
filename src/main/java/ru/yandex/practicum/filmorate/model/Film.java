@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -11,19 +12,15 @@ import java.util.Set;
 
 @Data
 public class Film {
-    private int id;
+    private long id;
     @NotBlank(message = "Film name is empty")
     private String name;
-    @Size(max = 200, message = "Film description is too long")
+    @Size(max = 200, message = "Film description is too long (max 200 chars)")
     private String description;
     private LocalDate releaseDate;
-    @Min(value = 0, message = "Film duration is negative")
+    @Min(value = 1, message = "Film duration must be positive")
     private int duration;
-    private Set<Integer> whoLiked;
-    private Set<Genre> genre;
-    private Rating rating;
-
-    public Film() {
-        this.whoLiked = new HashSet<>();
-    }
+    @NotNull(message = "Rating cannot be null")
+    private Rating mpa;
+    private Set<Genre> genres = new HashSet<>();
 }

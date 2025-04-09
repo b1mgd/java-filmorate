@@ -1,69 +1,70 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
+@Validated
 public class FilmController {
+
     private final FilmService filmService;
 
-    @Autowired
-    public FilmController(InMemoryFilmStorage inMemoryFilmStorage, InMemoryUserStorage inMemoryUserStorage) {
-        filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
-    }
-
-
     @GetMapping
-    public Collection<Film> getFilms() {
-        log.info("getFilms");
+    public Collection<FilmDto> getFilms() {
+        log.info("Received GET /films request");
         return filmService.getFilms();
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Film addFilm(@RequestBody @Valid Film film) {
-        log.info("addFilm");
+    @ResponseStatus(HttpStatus.CREATED)
+    public FilmDto addFilm(@Valid @RequestBody Film film) {
+        log.info("Received POST /films request with body: {}", film);
         return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        log.info("updateFilm");
+    public FilmDto updateFilm(@Valid @RequestBody Film film) {
+        log.info("Received PUT /films request with body: {}", film);
         return filmService.updateFilm(film);
     }
 
     @GetMapping("/{filmId}")
-    public Film getFilmById(@PathVariable int filmId) {
-        log.info("getFilmById");
+    public FilmDto getFilmById(@PathVariable long filmId) {
+        log.info("Received GET /films/{} request", filmId);
         return filmService.getFilmById(filmId);
     }
 
     @PutMapping("/{filmId}/like/{userId}")
-    public void addLikeToFilm(@PathVariable int filmId, @PathVariable int userId) {
-        log.info("addLikeToFilm");
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addLikeToFilm(@PathVariable long filmId, @PathVariable long userId) {
+        log.info("Received PUT /films/{}/like/{} request", filmId, userId);
         filmService.addLikeToFilm(filmId, userId);
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
-    public void deleteLikeToFilm(@PathVariable int filmId, @PathVariable int userId) {
-        log.info("deleteLikeToFilm");
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLikeToFilm(@PathVariable long filmId, @PathVariable long userId) {
+        log.info("Received DELETE /films/{}/like/{} request", filmId, userId);
         filmService.deleteLikeToFilm(filmId, userId);
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("getTopFilms");
+    public List<FilmDto> getTopFilms(@RequestParam(defaultValue = "10") @Positive(message = "Count must be positive") int count) {
+        log.info("Received GET /films/popular?count={} request", count);
         return filmService.getTopFilms(count);
     }
 }

@@ -13,7 +13,5 @@ public interface UserStorage {
 
     User updateUser(@RequestBody User user);
 
-    int setUserId();
-
-    User getUserById(int userId);
+    User getUserById(long userId);
 }

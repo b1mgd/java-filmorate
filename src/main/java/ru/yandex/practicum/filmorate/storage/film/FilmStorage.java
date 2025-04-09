@@ -13,7 +13,5 @@ public interface FilmStorage {
 
     Film updateFilm(@RequestBody Film film);
 
-    int setFilmId();
-
-    Film getFilmById(int filmId);
+    Film getFilmById(long filmId);
 }
