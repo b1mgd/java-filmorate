@@ -1,18 +1,15 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
-@RequiredArgsConstructor
-public class User {
-    private Integer id;
-
+public class NewUserRequest {
     @NotBlank(message = "Неверный формат почты")
     @Email(message = "Неверный формат почты")
     private String email;
@@ -21,6 +18,6 @@ public class User {
     private String login;
     private String name;
 
-    @Past (message = "Некорректная дата рождения")
+    @Past(message = "Некорректная дата рождения")
     private LocalDate birthday;
 }
