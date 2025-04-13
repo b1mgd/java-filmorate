@@ -11,10 +11,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -118,6 +115,20 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     }
 
     @Override
+    public Map<Integer, Set<Integer>> getAllFilmLikes() {
+        Map<Integer, Set<Integer>> filmLikes = new HashMap<>();
+        String query = "SELECT * FROM film_likes";
+
+        jdbc.query(query, resultSet -> {
+            int filmId = resultSet.getInt("film_id");
+            int userId = resultSet.getInt("user_id");
+            filmLikes.computeIfAbsent(filmId, key -> new HashSet<>()).add(userId);
+        });
+
+        return filmLikes;
+    }
+
+    @Override
     public boolean addLike(Integer filmId, Integer userId) {
         int rowsAdded = jdbc.update(ADD_LIKE_QUERY, filmId, userId);
         boolean addLikeResult = rowsAdded != 0;
@@ -164,5 +175,20 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
             genre.setName(rs.getString("name"));
             return genre;
         }, filmId));
+    }
+
+    public void addGenresToFilm(int filmId, Set<Genre> genres) {
+        if (genres == null || genres.isEmpty()) return;
+
+        String sql = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
+
+        List<Object[]> batchArgs = genres.stream()
+                .map(genre -> new Object[]{filmId, genre.getId()})
+                .toList();
+
+        jdbc.batchUpdate(sql, batchArgs);
+
+        log.info("Добавлены жанры к фильму с filmId {}: {}", filmId,
+                genres.stream().map(Genre::getId).toList());
     }
 }

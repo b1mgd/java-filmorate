@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/genres")
 public class GenreController {
-    FilmService filmService;
+    private FilmService filmService;
 
     public GenreController(FilmService filmService) {
         this.filmService = filmService;

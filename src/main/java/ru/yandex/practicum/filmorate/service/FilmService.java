@@ -48,20 +48,20 @@ public class FilmService {
     }
 
     public List<FilmDto> getAllFilms() {
-        List<FilmDto> films = filmStorage.getAllFilms()
-                .stream()
+        List<Film> films = filmStorage.getAllFilms();
+        Map<Integer, Set<Integer>> filmLikes = filmStorage.getAllFilmLikes();
+
+        films.forEach(this::enrich);
+
+        List<FilmDto> filmDtos = films.stream()
                 .map(film -> {
-                    Set<Integer> likes = filmStorage.getLikes(film.getId())
-                            .stream()
-                            .map(User::getId)
-                            .collect(Collectors.toSet());
-                    enrich(film);
+                    Set<Integer> likes = filmLikes.getOrDefault(film.getId(), Collections.emptySet());
                     return FilmMapper.maptoFilmDto(film, likes);
                 })
                 .collect(Collectors.toList());
 
         log.info("Получен список всех загруженных фильмов размером: {}", films.size());
-        return films;
+        return filmDtos;
     }
 
     public FilmDto getFilmById(Integer filmId) {
@@ -71,9 +71,7 @@ public class FilmService {
                             .stream()
                             .map(User::getId)
                             .collect(Collectors.toSet());
-                    System.out.println("film = " + film);
                     enrich(film);
-                    System.out.println("film = " + film);
                     return FilmMapper.maptoFilmDto(film, likes);
                 })
                 .orElseThrow(() -> {
@@ -296,10 +294,9 @@ public class FilmService {
     private void saveGenresForFilm(Film film) {
         filmRepository.deleteGenresByFilmId(film.getId());
 
-        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-            for (Genre genre : film.getGenres()) {
-                filmRepository.addGenreToFilm(film.getId(), genre.getId());
-            }
+        Set<Genre> genres = film.getGenres();
+        if (genres != null && !genres.isEmpty()) {
+            filmRepository.addGenresToFilm(film.getId(), genres);
         }
     }
 }
