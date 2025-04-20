@@ -5,10 +5,7 @@ import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -28,12 +25,12 @@ public class FilmMapper {
         }
 
         if (requestFilm.getGenres() != null) {
-            Set<Genre> genresWithIdOnly = requestFilm.getGenres().stream()
+            List<Genre> genresWithIdOnly = requestFilm.getGenres().stream()
                     .filter(g -> g != null && g.getId() != 0)
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
             film.setGenres(genresWithIdOnly);
         } else {
-            film.setGenres(new HashSet<>());
+            film.setGenres(new ArrayList<>());
         }
 
         return film;
@@ -49,7 +46,7 @@ public class FilmMapper {
         dto.setReleaseDate(film.getReleaseDate());
         dto.setDuration(film.getDuration());
         dto.setMpa(RatingMapper.mapToRatingDto(film.getMpa()));
-        dto.setGenres(GenreMapper.mapToGenreDtoSet(film.getGenres()));
+        dto.setGenres(GenreMapper.mapToGenreDtoList(film.getGenres()));
         dto.setLikes(Optional.ofNullable(likes).orElse(Collections.emptySet()));
         return dto;
     }
