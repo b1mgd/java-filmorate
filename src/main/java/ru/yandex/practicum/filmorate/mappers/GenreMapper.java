@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,13 +19,13 @@ public class GenreMapper {
         return dto;
     }
 
-    public static Set<GenreDto> mapToGenreDtoSet(Set<Genre> genres) {
+    public static List<GenreDto> mapToGenreDtoList(List<Genre> genres) {
         if (genres == null || genres.isEmpty()) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
         return genres.stream()
                 .map(GenreMapper::mapToGenreDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     public static Genre mapToGenre(GenreDto dto) {
@@ -33,6 +34,15 @@ public class GenreMapper {
         genre.setId(dto.getId());
         genre.setName(dto.getName());
         return genre;
+    }
+
+    public static List<Genre> mapToGenreList(List<GenreDto> genreDtos) { // Принимает и возвращает List
+        if (genreDtos == null || genreDtos.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return genreDtos.stream()
+                .map(GenreMapper::mapToGenre)
+                .collect(Collectors.toList()); // Собираем в List
     }
 
 }

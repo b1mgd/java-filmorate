@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -98,7 +99,7 @@ public class FilmDbStorage implements FilmStorage {
         getRatingById(mpa.getId());
     }
 
-    private void validateGenresExist(Set<Genre> genres) {
+    private void validateGenresExist(List<Genre> genres) {
         if (genres != null && !genres.isEmpty()) {
             for (Genre genre : genres) {
                 if (genre == null || genre.getId() == 0) {

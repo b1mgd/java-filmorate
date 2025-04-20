@@ -73,7 +73,7 @@ public class FilmRepository extends BaseRepository<Film> {
         mpa.setId(rs.getInt("mpa_id"));
         mpa.setName(rs.getString("mpa_name"));
         film.setMpa(mpa);
-        film.setGenres(new HashSet<>());
+        film.setGenres(new ArrayList<>());
         return film;
     };
 
@@ -118,14 +118,14 @@ public class FilmRepository extends BaseRepository<Film> {
                 filmGenreRelationRowMapper
         );
 
-        Map<Long, Set<Genre>> genresByFilmId = relations.stream()
+        Map<Long, List<Genre>> genresByFilmId = relations.stream()
                 .collect(groupingBy(
                         relation -> relation.filmId,
-                        mapping(relation -> relation.genre, toSet())
+                        mapping(relation -> relation.genre, toList())
                 ));
 
         films.forEach(film ->
-                film.setGenres(genresByFilmId.getOrDefault(film.getId(), Collections.emptySet()))
+                film.setGenres(genresByFilmId.getOrDefault(film.getId(), Collections.emptyList()))
         );
     }
 
@@ -172,23 +172,26 @@ public class FilmRepository extends BaseRepository<Film> {
         return findById(film.getId()).orElseThrow(() -> new IllegalStateException("Updated film not found, id: " + film.getId()));
     }
 
-    private void saveGenres(Film film) {
-        if (film.getGenres() == null || film.getGenres().isEmpty()) {
-            deleteGenres(film.getId());
-            return;
-        }
-        List<Object[]> batchArgs = film.getGenres().stream()
-                .filter(Objects::nonNull)
-                .map(genre -> new Object[]{film.getId(), genre.getId()})
-                .distinct()
-                .collect(Collectors.toList());
-        if (!batchArgs.isEmpty()) {
-            jdbc.batchUpdate(INSERT_FILM_GENRE_QUERY, batchArgs);
-        }
+    private void deleteGenres(long filmId) {
+        String sql = "DELETE FROM film_genre WHERE film_id = ?";
+        jdbc.update(sql, filmId);
     }
 
-    private void deleteGenres(long filmId) {
-        jdbc.update(DELETE_FILM_GENRES_QUERY, filmId);
+    private void saveGenres(Film film) {
+        if (film.getGenres() == null || film.getGenres().isEmpty()) {
+            return;
+        }
+        String sql = "INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)";
+
+        List<Object[]> batchArgs = film.getGenres().stream()
+                .filter(Objects::nonNull)
+                .filter(genre -> genre.getId() > 0)
+                .distinct()
+                .map(genre -> new Object[]{film.getId(), genre.getId()})
+                .collect(Collectors.toList());
+        if (!batchArgs.isEmpty()) {
+            jdbc.batchUpdate(sql, batchArgs);
+        }
     }
 
     public Set<Long> getLikes(long filmId) {
