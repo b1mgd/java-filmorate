@@ -215,4 +215,7 @@ public class FilmDbStorage implements FilmStorage {
         return filmRepository.findByDirector(directorId, sortMode);
     }
 
+    public List<Film> searchFilms(String searchText, String searchBy) {
+        return filmRepository.searchFilms(searchText, searchBy);
+    }
 }
