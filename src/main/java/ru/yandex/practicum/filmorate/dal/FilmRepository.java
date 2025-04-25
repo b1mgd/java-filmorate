@@ -94,7 +94,7 @@ public class FilmRepository extends BaseRepository<Film> {
               JOIN rating AS r ON f.rating_id = r.rating_id
               LEFT JOIN FILM_DIRECTORS fd ON f.ID = fd.FILM_ID
               LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
-             WHERE 
+             WHERE
             """;
 
     private final JdbcTemplate jdbc;
