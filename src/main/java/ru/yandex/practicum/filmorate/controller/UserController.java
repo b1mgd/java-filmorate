@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
@@ -17,10 +19,12 @@ import java.util.Collection;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserDbStorage userDbStorage) {
+    public UserController(UserDbStorage userDbStorage, FilmService filmService) {
         userService = new UserService(userDbStorage);
+        this.filmService = filmService;
     }
 
     @GetMapping
@@ -78,6 +82,12 @@ public class UserController {
     public void deleteUser(@PathVariable int userId) {
         log.info("Recieved DELETE /users/{} request", userId);
         userService.deleteUser(userId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<FilmDto> getRecommendations(@PathVariable long id) {
+        log.info("get recommendations");
+        return filmService.getRecommendations(id);
     }
 }
 

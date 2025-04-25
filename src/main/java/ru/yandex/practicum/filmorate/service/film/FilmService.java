@@ -94,7 +94,6 @@ public class FilmService {
         if (count <= 0) {
             throw new ValidationException("Count parameter must be positive.");
         }
-
         return filmStorage.getTopFilms(count, genreId, year)
                 .stream()
                 .map(film -> {
@@ -159,6 +158,15 @@ public class FilmService {
 
     }
 
+    public List<FilmDto> getRecommendations(long id) {
+        userExists(id);
+        log.info("Getting recommendations films for user with id = {}", id);
+        Collection<Film> films = filmStorage.getRecommendations(id);
+        return films.stream()
+                .map(film -> FilmMapper.mapToFilmDto(film, filmStorage.getLikes(film.getId())))
+                .collect(Collectors.toList());
+    }
+
     private void validateFilm(Film film) {
         if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
             log.warn("Validation failed");
@@ -173,4 +181,13 @@ public class FilmService {
     private void filmExists(long filmId) {
         filmStorage.getFilmById(filmId);
     }
+
+    public List<FilmDto> findByDirector(long directorId, String sortMode) {
+        log.info("Getting films by director with id: {} and sort mode {}", directorId, sortMode);
+        Collection<Film> films = filmStorage.findByDirector(directorId, sortMode);
+        return films.stream()
+                .map(film -> FilmMapper.mapToFilmDto(film, filmStorage.getLikes(film.getId())))
+                .collect(Collectors.toList());
+    }
+
 }
