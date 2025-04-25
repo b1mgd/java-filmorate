@@ -12,7 +12,10 @@ import ru.yandex.practicum.filmorate.exception.EmptyFieldException;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.UserMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.util.ArrayList;
@@ -25,10 +28,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserDbStorage userDbStorage;
+    private final FeedService feedService;
 
-    @Autowired // Внедрение зависимостей через конструктор
-    public UserService(UserDbStorage userDbStorage) {
+    @Autowired
+    public UserService(UserDbStorage userDbStorage, FeedService feedService) {
         this.userDbStorage = userDbStorage;
+        this.feedService = feedService;
     }
 
     public void addFriend(long firstUserId, long secondUserId) {
@@ -39,6 +44,7 @@ public class UserService {
         if (!userDbStorage.getFriends(firstUserId).contains(secondUserId)) {
             log.debug("add friends");
             userDbStorage.addFriend(firstUserId, secondUserId);
+            feedService.logEvent(firstUserId, EventType.FRIEND, Operation.ADD, secondUserId);
         } else if (userDbStorage.getFriends(firstUserId).contains(secondUserId)) {
             log.warn("the friendship was already created");
             throw new RuntimeException("the friendship was already created");
@@ -56,7 +62,9 @@ public class UserService {
         if (userDbStorage.getFriends(firstUserId).contains(secondUserId)) {
             log.debug("delete friends");
             userDbStorage.deleteFriend(firstUserId, secondUserId);
+            feedService.logEvent(firstUserId, EventType.FRIEND, Operation.REMOVE, secondUserId);
         }
+
     }
 
     public List<UserDto> getFriends(long userId) {

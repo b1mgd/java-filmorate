@@ -14,9 +14,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.FilmMapper;
 import ru.yandex.practicum.filmorate.mappers.GenreMapper;
 import ru.yandex.practicum.filmorate.mappers.RatingMapper;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
@@ -35,6 +34,7 @@ public class FilmService {
 
     private final FilmDbStorage filmStorage;
     private final UserDbStorage userStorage;
+    private final FeedService feedService;
 
     public Collection<FilmDto> getFilms() {
         log.info("Getting all films");
@@ -78,6 +78,7 @@ public class FilmService {
         userExists(userId);
         filmStorage.addLike(filmId, userId);
         log.info("Like added successfully");
+        feedService.logEvent(userId, EventType.LIKE, Operation.ADD, filmId);
     }
 
     @Transactional
@@ -87,6 +88,7 @@ public class FilmService {
         userExists(userId);
         filmStorage.removeLike(filmId, userId);
         log.info("Like removed successfully");
+        feedService.logEvent(userId, EventType.LIKE, Operation.REMOVE, filmId);
     }
 
     public List<FilmDto> getTopFilms(int count, int genreId, int year) {
