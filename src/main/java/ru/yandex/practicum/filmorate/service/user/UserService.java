@@ -114,7 +114,7 @@ public class UserService {
     }
 
     public UserDto addUser(User user) {
-        if (user.getName() == null) {
+        if (user.getName() == null || user.getName().isBlank()) {
             log.debug("Username is empty, using login as name");
             user.setName(user.getLogin());
         }

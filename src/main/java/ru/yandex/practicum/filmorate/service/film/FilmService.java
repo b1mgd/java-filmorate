@@ -188,6 +188,11 @@ public class FilmService {
     public List<FilmDto> findByDirector(long directorId, String sortMode) {
         log.info("Getting films by director with id: {} and sort mode {}", directorId, sortMode);
         Collection<Film> films = filmStorage.findByDirector(directorId, sortMode);
+        if (films.isEmpty()) {
+            log.error("No data found matching the specified parameters (id: {} and sort mode {})",
+                    directorId, sortMode);
+            throw new NotFoundException("No data found matching the specified parameters");
+        }
         return films.stream()
                 .map(film -> FilmMapper.mapToFilmDto(film, filmStorage.getLikes(film.getId())))
                 .collect(Collectors.toList());

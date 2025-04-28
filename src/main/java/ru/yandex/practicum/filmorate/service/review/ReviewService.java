@@ -80,11 +80,23 @@ public class ReviewService {
         /*
         Ручная обработка из-за специфичных postman тестов
          */
-        if (request.getUserId() <= 0) {
+        if (request.getUserId() == null) {
+            log.error("Parameter UserId cannot be empty");
+            throw new MethodArgumentNotValidException("Parameter UserId cannot be empty");
+        }
+
+        if (request.getFilmId() == null) {
+            log.error("Parameter FilmId cannot be empty");
+            throw new MethodArgumentNotValidException("Parameter FilmId cannot be empty");
+        }
+
+        if (request.getUserId() < 0) {
+            log.error("User id must be greater than 0");
             throw new NotFoundException("User id must be greater than 0");
         }
 
-        if (request.getFilmId() <= 0) {
+        if (request.getFilmId() < 0) {
+            log.error("Film id must be greater than 0");
             throw new NotFoundException("Film id must be greater than 0");
         }
 
