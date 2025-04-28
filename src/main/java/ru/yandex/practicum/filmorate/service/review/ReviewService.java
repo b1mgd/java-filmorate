@@ -12,8 +12,11 @@ import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.ReviewMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -28,13 +31,16 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final FeedService feedService;
 
     public ReviewService(@Qualifier("reviewRepository") ReviewStorage reviewStorage,
                          @Qualifier("filmDbStorage") FilmStorage filmStorage,
-                         @Qualifier("userDbStorage") UserStorage userStorage) {
+                         @Qualifier("userDbStorage") UserStorage userStorage,
+                         FeedService feedService) {
         this.reviewStorage = reviewStorage;
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.feedService = feedService;
     }
 
     public List<ReviewDto> getFilmReviews(long filmId, long count) {
@@ -62,9 +68,9 @@ public class ReviewService {
     public ReviewDto getReviewById(long reviewId) {
         Optional<Review> optionalReview = reviewStorage.getReviewById(reviewId);
         return optionalReview.map(review -> {
-            ReviewDto reviewDto = ReviewMapper.mapToReviewDto(review);
-            log.info("Found review: {}", reviewDto);
-            return reviewDto;
+                    ReviewDto reviewDto = ReviewMapper.mapToReviewDto(review);
+                    log.info("Found review: {}", reviewDto);
+                    return reviewDto;
                 })
                 .orElseThrow(() -> new NotFoundException("Review with ID " + reviewId + " not found"));
     }
@@ -84,6 +90,7 @@ public class ReviewService {
 
         Review review = ReviewMapper.mapToReview(request);
         ReviewDto reviewDto = ReviewMapper.mapToReviewDto(reviewStorage.addReview(review));
+        feedService.logEvent(review.getUserId(), EventType.REVIEW, Operation.ADD, review.getReviewId());
         log.info("Review successfully added");
         return reviewDto;
     }
@@ -93,7 +100,7 @@ public class ReviewService {
         Review updatedReview = reviewStorage.getReviewById(request.getReviewId())
                 .map(review -> ReviewMapper.updateReviewFields(review, request))
                 .orElseThrow(() -> new NotFoundException("Review with ID " + request.getReviewId() + " not found"));
-
+        feedService.logEvent(updatedReview.getUserId(), EventType.REVIEW, Operation.UPDATE, updatedReview.getReviewId());
         return ReviewMapper.mapToReviewDto(updatedReview);
     }
 
@@ -103,8 +110,8 @@ public class ReviewService {
         log.info("Deleting review: {}", reviewDto);
 
         boolean isDeleted = reviewStorage.deleteReview(reviewId);
-
         if (isDeleted) {
+            feedService.logEvent(reviewDto.getUserId(), EventType.REVIEW, Operation.REMOVE, reviewId);
             log.info("Review deleted successfully");
         } else {
             throw new InternalServerException("Review was not deleted due to internal server error");

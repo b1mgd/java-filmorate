@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
@@ -22,8 +23,8 @@ public class UserController {
     private final FilmService filmService;
 
     @Autowired
-    public UserController(UserDbStorage userDbStorage, FilmService filmService) {
-        userService = new UserService(userDbStorage);
+    public UserController(UserDbStorage userDbStorage, FilmService filmService, FeedService feedService) {
+        userService = new UserService(userDbStorage, feedService);
         this.filmService = filmService;
     }
 
