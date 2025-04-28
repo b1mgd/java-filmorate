@@ -64,7 +64,6 @@ public class UserService {
             userDbStorage.deleteFriend(firstUserId, secondUserId);
             feedService.logEvent(firstUserId, EventType.FRIEND, Operation.REMOVE, secondUserId);
         }
-
     }
 
     public List<UserDto> getFriends(long userId) {

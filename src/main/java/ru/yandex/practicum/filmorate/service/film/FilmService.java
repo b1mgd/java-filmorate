@@ -91,6 +91,7 @@ public class FilmService {
         feedService.logEvent(userId, EventType.LIKE, Operation.REMOVE, filmId);
     }
 
+    @Transactional
     public List<FilmDto> getTopFilms(int count, int genreId, int year) {
         log.info("Getting top {} popular films with genreId = {} and release year = {}", count, genreId, year);
         if (count <= 0) {

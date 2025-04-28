@@ -19,7 +19,7 @@ public class FeedRepository {
     }
 
     public List<Event> getUsersEventFeed(long userId) {
-        String sqlQuery = "SELECT * FROM event_feed WHERE user_id = ? ORDER BY timestamp DESC;";
+        String sqlQuery = "SELECT * FROM event_feed WHERE user_id = ?;";
         return jdbc.query(sqlQuery, eventRowMapper, userId);
     }
 
