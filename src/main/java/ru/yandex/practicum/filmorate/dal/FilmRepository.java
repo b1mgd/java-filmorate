@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.exception.ParameterNotValidException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -83,6 +84,17 @@ public class FilmRepository extends BaseRepository<Film> {
                       JOIN FILM_DIRECTORS fd ON f.ID = fd.FILM_ID
                      WHERE fd.DIRECTOR_ID = ?
                      ORDER BY f.RELEASE_DATE
+            """;
+
+    private static final String FIND_BY_TITLE_OR_DIRECTOR = """
+            SELECT f.*,
+                   r.rating_id as mpa_id,
+                   r.rating_name as mpa_name
+              FROM films AS f
+              JOIN rating AS r ON f.rating_id = r.rating_id
+              LEFT JOIN FILM_DIRECTORS fd ON f.ID = fd.FILM_ID
+              LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID
+             WHERE
             """;
 
     private final JdbcTemplate jdbc;
@@ -405,6 +417,41 @@ public class FilmRepository extends BaseRepository<Film> {
     private void deleteFilms(long filmId) {
         String sql = "DELETE FROM FILM_DIRECTORS WHERE film_id = ?";
         jdbc.update(sql, filmId);
+    }
+
+    public List<Film> searchFilms(String searchText, String searchBy) {
+        // searchBy может принимать значения director (поиск по режиссёру), title (поиск по названию),
+        // либо оба значения через запятую при поиске одновременно и по режиссеру и по названию.
+        // Поэтому поместим эти параметры в массив и в цикле сделаем условия для запроса
+        String[] searchByList = searchBy.split(",");
+        Arrays.sort(searchByList);
+        StringBuilder queryBuilder = new StringBuilder(FIND_BY_TITLE_OR_DIRECTOR);
+
+        if (searchByList.length > 2 || searchByList.length == 0) {
+            throw new ParameterNotValidException("by", "The parameter must contain one or two values: " +
+                                                       "director and(or) title");
+        }
+
+        for (int i = 0; i < searchByList.length; i++) {
+            if (searchByList[i].equals("director") && searchByList.length == 1) {
+                queryBuilder.append("upper(d.NAME) LIKE upper('%" + searchText + "%')");
+            } else if (searchByList[i].equals("director") && searchByList.length == 2) {
+                queryBuilder.append("upper(d.NAME) LIKE upper('%" + searchText + "%') OR");
+            }
+            if (searchByList[i].equals("title")) {
+                queryBuilder.append(" upper(f.NAME) LIKE upper('%" + searchText + "%')");
+            }
+        }
+        queryBuilder.append("\nORDER BY (SELECT count(1) FROM LIKES l WHERE l.FILM_ID = f.ID) DESC");
+
+        List<Film> films = jdbc.query(queryBuilder.toString(), filmWithRatingMapper);
+
+        if (!films.isEmpty()) {
+            setGenresForFilms(films);
+            setDirectorForFilm(films);
+        }
+
+        return films;
     }
 
 }
