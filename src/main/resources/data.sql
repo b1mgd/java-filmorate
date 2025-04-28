@@ -1,18 +1,3 @@
-delete
-from FILMS;
-delete
-from LIKES;
-delete
-from GENRE;
-delete
-from RATING;
-delete
-from USERS;
-delete
-from FILM_GENRE;
-delete
-from FRIENDSHIP;
-
 insert into RATING(rating_id, rating_name)
 values (1, 'G'),
        (2, 'PG'),

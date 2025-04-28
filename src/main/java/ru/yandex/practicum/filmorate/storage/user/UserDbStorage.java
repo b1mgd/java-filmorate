@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.Collection;
 import java.util.Set;
 
-@Qualifier
+@Qualifier("userDbStorage")
 @Repository
 public class UserDbStorage implements UserStorage {
     private final UserRepository repository;
