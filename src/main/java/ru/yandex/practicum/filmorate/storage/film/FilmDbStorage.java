@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
 import ru.yandex.practicum.filmorate.dal.GenreRepository;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Qualifier("filmDbStorage")
 @Repository
 public class FilmDbStorage implements FilmStorage {
 
@@ -215,4 +217,7 @@ public class FilmDbStorage implements FilmStorage {
         return filmRepository.findByDirector(directorId, sortMode);
     }
 
+    public List<Film> searchFilms(String searchText, String searchBy) {
+        return filmRepository.searchFilms(searchText, searchBy);
+    }
 }

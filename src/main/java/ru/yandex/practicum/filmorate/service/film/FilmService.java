@@ -192,4 +192,12 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public List<FilmDto> searchFilms(String searchText, String searchBy) {
+        Collection<Film> films = filmStorage.searchFilms(searchText, searchBy);
+        log.info("Getting films by {} and search text {}", searchBy, searchText);
+        return films.stream()
+                .map(film -> FilmMapper.mapToFilmDto(film, filmStorage.getLikes(film.getId())))
+                .collect(Collectors.toList());
+    }
+
 }
