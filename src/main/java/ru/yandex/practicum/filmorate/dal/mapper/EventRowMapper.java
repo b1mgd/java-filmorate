@@ -20,6 +20,7 @@ public class EventRowMapper implements RowMapper<Event> {
         event.setEventType(EventType.valueOf(resultSet.getString(("event_type"))));
         event.setOperation(Operation.valueOf(resultSet.getString("operation")));
         event.setEntityId(resultSet.getLong("entity_id"));
+        event.setEventId(resultSet.getLong("event_id"));
         return event;
     }
 }

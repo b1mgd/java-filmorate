@@ -15,6 +15,8 @@ public interface ReviewStorage {
 
     Review addReview(Review newReview);
 
+    Review updateReview(Review newReview);
+
     boolean deleteReview(long reviewId);
 
     boolean likeReview(long reviewId, long likeId);

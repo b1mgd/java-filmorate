@@ -9,6 +9,7 @@ public class Event {
     private long userId;
     private EventType eventType;
     private Operation operation;
+    private long eventId;
     private long entityId;
 }
 

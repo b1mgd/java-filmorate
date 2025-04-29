@@ -60,7 +60,7 @@ public class ReviewRepository extends BaseRepository<Review> implements ReviewSt
             "VALUES (?, ?, ?, ?)";
 
     private static final String PUT_REVIEW = "UPDATE reviews " +
-            "SET content = ?, is_positive = ?, user_id = ?, film_id = ? WHERE review_id = ?";
+            "SET content = ?, is_positive = ? WHERE review_id = ?";
 
     private static final String DELETE_REVIEW = "DELETE FROM reviews WHERE review_id = ?";
 
@@ -129,5 +129,14 @@ public class ReviewRepository extends BaseRepository<Review> implements ReviewSt
     public boolean removeDislike(long reviewId, long userId) {
         int rowsRemoved = jdbc.update(REMOVE_RATE, reviewId, userId);
         return rowsRemoved > 0;
+    }
+
+    @Override
+    public Review updateReview(Review newReview) {
+        update(PUT_REVIEW,
+                newReview.getContent(),
+                newReview.getIsPositive(),
+                newReview.getReviewId());
+        return newReview;
     }
 }

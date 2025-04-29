@@ -325,7 +325,7 @@ public class FilmRepository extends BaseRepository<Film> {
 
         StringBuilder queryBuilder = new StringBuilder("SELECT f.*, r.rating_id AS mpa_id, r.rating_name AS mpa_name " +
                 "FROM films AS f JOIN rating AS r on f.rating_id = r.rating_id " +
-                "JOIN film_genre AS fg ON f.id = fg.film_id " +
+                "LEFT JOIN film_genre AS fg ON f.id = fg.film_id " +
                 "LEFT JOIN likes AS l ON f.id = l.film_id WHERE 1=1"
         );
 
@@ -346,6 +346,8 @@ public class FilmRepository extends BaseRepository<Film> {
 
         List<Film> films = jdbc.query(queryBuilder.toString(), filmWithRatingMapper, filterParams.toArray());
         setGenresForFilms(films);
+        setDirectorForFilm(films);
+
         return films;
     }
 
@@ -429,7 +431,7 @@ public class FilmRepository extends BaseRepository<Film> {
 
         if (searchByList.length > 2 || searchByList.length == 0) {
             throw new ParameterNotValidException("by", "The parameter must contain one or two values: " +
-                                                       "director and(or) title");
+                    "director and(or) title");
         }
 
         for (int i = 0; i < searchByList.length; i++) {

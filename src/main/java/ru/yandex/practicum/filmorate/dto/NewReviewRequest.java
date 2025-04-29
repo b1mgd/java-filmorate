@@ -10,7 +10,7 @@ public class NewReviewRequest {
     @NotNull
     private Boolean isPositive;
     /*
-    POST тесты в postman требуют возавращать 404 при неверных значения userId и filmId.
+    POST тесты в postman требуют возвращать 404 при неверных значения userId и filmId.
     В это время стандартный Spring-обработчик вернет 400 (аннотация @Positive)
     Реализовал обработку вручную в ReviewService с выбрасыванием исключения
      */

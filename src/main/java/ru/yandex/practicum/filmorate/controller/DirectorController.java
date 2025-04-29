@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,13 +35,13 @@ public class DirectorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DirectorDto addDirector(@RequestBody Director director) {
+    public DirectorDto addDirector(@RequestBody @Valid Director director) {
         log.info("Received POST /directors request with body: {}", director);
         return directorService.addDirector(director);
     }
 
     @PutMapping
-    public DirectorDto updateDirector(@RequestBody Director director) {
+    public DirectorDto updateDirector(@RequestBody @Valid Director director) {
         log.info("Received PUT /directors request with body: {}", director);
         return directorService.updateDirector(director);
     }

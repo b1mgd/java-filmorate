@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ReviewService {
+
     private final ReviewStorage reviewStorage;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
@@ -80,11 +81,23 @@ public class ReviewService {
         /*
         Ручная обработка из-за специфичных postman тестов
          */
-        if (request.getUserId() <= 0) {
+        if (request.getUserId() == null) {
+            log.error("Parameter UserId cannot be empty");
+            throw new MethodArgumentNotValidException("Parameter UserId cannot be empty");
+        }
+
+        if (request.getFilmId() == null) {
+            log.error("Parameter FilmId cannot be empty");
+            throw new MethodArgumentNotValidException("Parameter FilmId cannot be empty");
+        }
+
+        if (request.getUserId() < 0) {
+            log.error("User id must be greater than 0");
             throw new NotFoundException("User id must be greater than 0");
         }
 
-        if (request.getFilmId() <= 0) {
+        if (request.getFilmId() < 0) {
+            log.error("Film id must be greater than 0");
             throw new NotFoundException("Film id must be greater than 0");
         }
 
@@ -100,6 +113,7 @@ public class ReviewService {
         Review updatedReview = reviewStorage.getReviewById(request.getReviewId())
                 .map(review -> ReviewMapper.updateReviewFields(review, request))
                 .orElseThrow(() -> new NotFoundException("Review with ID " + request.getReviewId() + " not found"));
+        reviewStorage.updateReview(updatedReview);
         feedService.logEvent(updatedReview.getUserId(), EventType.REVIEW, Operation.UPDATE, updatedReview.getReviewId());
         return ReviewMapper.mapToReviewDto(updatedReview);
     }
