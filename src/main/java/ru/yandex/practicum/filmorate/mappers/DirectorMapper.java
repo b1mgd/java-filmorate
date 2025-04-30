@@ -24,12 +24,28 @@ public class DirectorMapper {
         return directorDto;
     }
 
+    public static Director toDirectorDTO(DirectorDto directorDto) {
+        Director director = new Director();
+        director.setId(directorDto.getId());
+        director.setName(directorDto.getName());
+        return director;
+    }
+
     public static List<DirectorDto> mapToDirectorDtoList(List<Director> directors) {
         if (directors == null || directors.isEmpty()) {
             return Collections.emptyList();
         }
         return directors.stream()
                 .map(DirectorMapper::mapToDirectorDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<Director> mapToDirectorList(List<DirectorDto> directorDtos) {
+        if (directorDtos == null || directorDtos.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return directorDtos.stream()
+                .map(DirectorMapper::toDirectorDTO)
                 .collect(Collectors.toList());
     }
 
