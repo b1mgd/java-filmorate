@@ -14,7 +14,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# macOS
+### macOS ###
 .DS_Store
 
 ### STS ###
